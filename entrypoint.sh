@@ -6,6 +6,7 @@ set -euo pipefail
 : ${CATALINA_CONNECTOR_PROXYPORT:=}
 : ${CATALINA_CONNECTOR_SCHEME:=http}
 : ${CATALINA_CONNECTOR_SECURE:=false}
+: ${CATALINA_CONNECTOR_PATH:=}
 
 : ${CATALINA_OPTS:=}
 
@@ -16,6 +17,23 @@ CATALINA_OPTS="${CATALINA_OPTS} -DcatalinaConnectorSecure=${CATALINA_CONNECTOR_S
 
 export CATALINA_OPTS
 
+# Confluence Proxy
+if [ -n "${CATALINA_CONNECTOR_PROXYNAME}" ]; then
+  xmlstarlet ed --inplace --pf --ps --insert '//Connector[@port="8090"]' --type "attr" --name "proxyName" --value "${CATALINA_CONNECTOR_PROXYNAME}" "${CONFLUENCE_INSTALL}/conf/server.xml"
+fi
+if [ -n "${CATALINA_CONNECTOR_PROXYPORT}" ]; then
+  xmlstarlet ed --inplace --pf --ps --insert '//Connector[@port="8090"]' --type "attr" --name "proxyPort" --value "${CATALINA_CONNECTOR_PROXYPORT}" "${CONFLUENCE_INSTALL}/conf/server.xml"
+fi
+if [ -n "${CATALINA_CONNECTOR_SCHEME}" ]; then
+  xmlstarlet ed --inplace --pf --ps --insert '//Connector[@port="8090"]' --type "attr" --name "scheme" --value "${CATALINA_CONNECTOR_SCHEME}" "${CONFLUENCE_INSTALL}/conf/server.xml"
+fi
+if [ "${CATALINA_CONNECTOR_SCHEME}" = "https" ]; then
+  xmlstarlet ed --inplace --pf --ps --insert '//Connector[@port="8090"]' --type "attr" --name "secure" --value "true" "${CONFLUENCE_INSTALL}/conf/server.xml"
+  xmlstarlet ed --inplace --pf --ps --update '//Connector[@port="8080"]/@redirectPort' --value "${CATALINA_CONNECTOR_PROXYPORT}" "${CONFLUENCE_INSTALL}/conf/server.xml"
+fi
+if [ -n "${CATALINA_CONNECTOR_PATH}" ]; then
+  xmlstarlet ed --inplace --pf --ps --update '//Context/@path' --value "${CATALINA_CONNECTOR_PATH}" "${CONFLUENCE_INSTALL}/conf/server.xml"
+fi
 
 # Start Confluence as the correct user
 if [ "${UID}" -eq 0 ]; then

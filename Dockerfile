@@ -24,7 +24,7 @@ RUN set -x
 # Install requeriments
 RUN apk update -qq
 RUN update-ca-certificates
-RUN apk add --no-cache    ca-certificates wget curl openssh bash procps openssl perl ttf-dejavu tini libc6-compat
+RUN apk add --no-cache    ca-certificates wget curl openssh bash procps openssl perl ttf-dejavu tini libc6-compat xmlstarlet
 
 # Confluence set up
 RUN rm -rf                /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
@@ -44,7 +44,7 @@ RUN curl -Ls               "${POSTGRES_CONNECTOR_DOWNLOAD_URL}" -o "${CONFLUENCE
 # Config
 RUN echo -e                "\nconfluence.home=$CONFLUENCE_HOME" >> "${CONFLUENCE_INSTALL}/confluence/WEB-INF/classes/confluence-init.properties"
 #RUN sed -i -e             's/-Xms\([0-9]\+[kmg]\) -Xmx\([0-9]\+[kmg]\)/-Xms\${JVM_MINIMUM_MEMORY:=\1} -Xmx\${JVM_MAXIMUM_MEMORY:=\2} \${JVM_SUPPORT_RECOMMENDED_ARGS} -Dconfluence.home=\${CONFLUENCE_HOME}/g' ${CONFLUENCE_INSTALL}/bin/setenv.sh
-#RUN sed -i -e             's/port="8090"/port="8090" secure="${catalinaConnectorSecure}" scheme="${catalinaConnectorScheme}" proxyName="${catalinaConnectorProxyName}" proxyPort="${catalinaConnectorProxyPort}"/' ${CONFLUENCE_INSTALL}/conf/server.xml
+#RUN sed -i -e             's/port="8090"/port="8090" secure="${CATALINA_CONNECTOR_SECURE}" scheme="${CATALINA_CONNECTOR_SCHEME}" proxyName="${CATALINA_CONNECTOR_PROXYNAME}" proxyPort="${CATALINA_CONNECTOR_PROXYPORT}"/' ${CONFLUENCE_INSTALL}/conf/server.xml
 
 
 USER root:root
