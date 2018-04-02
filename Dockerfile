@@ -1,5 +1,5 @@
 FROM openjdk:8-jdk-alpine
-MAINTAINER Eager Minds
+MAINTAINER Javier de Diego Navarro - Eager Minds [javier@eager-minds.com]
 
 # Environment vars
 ENV CONFLUENCE_HOME      /var/atlassian/application-data/confluence
@@ -35,7 +35,7 @@ RUN ls -la                "${CONFLUENCE_INSTALL}/bin"
 
 # Database connectors
 RUN curl -Ls               "${MYSQL_CONNECTOR_DOWNLOAD_URL}"   \
-     | tar -xz --directory "${CONFLUENCE_INSTALL}/lib"               \
+     | tar -xz --directory "${CONFLUENCE_INSTALL}/lib"         \
                            "${MYSQL_CONNECTOR_JAR}"            \
                            --strip-components=1 --no-same-owner
 RUN rm -f                  "${CONFLUENCE_INSTALL}/confluence/WEB-INF/lib/${OLD_POSTGRES_CONNECTOR_JAR}"
@@ -44,7 +44,12 @@ RUN curl -Ls               "${POSTGRES_CONNECTOR_DOWNLOAD_URL}" -o "${CONFLUENCE
 # Config
 RUN echo -e                "\nconfluence.home=$CONFLUENCE_HOME" >> "${CONFLUENCE_INSTALL}/confluence/WEB-INF/classes/confluence-init.properties"
 #RUN sed -i -e             's/-Xms\([0-9]\+[kmg]\) -Xmx\([0-9]\+[kmg]\)/-Xms\${JVM_MINIMUM_MEMORY:=\1} -Xmx\${JVM_MAXIMUM_MEMORY:=\2} \${JVM_SUPPORT_RECOMMENDED_ARGS} -Dconfluence.home=\${CONFLUENCE_HOME}/g' ${CONFLUENCE_INSTALL}/bin/setenv.sh
-#RUN sed -i -e             's/port="8090"/port="8090" secure="${CATALINA_CONNECTOR_SECURE}" scheme="${CATALINA_CONNECTOR_SCHEME}" proxyName="${CATALINA_CONNECTOR_PROXYNAME}" proxyPort="${CATALINA_CONNECTOR_PROXYPORT}"/' ${CONFLUENCE_INSTALL}/conf/server.xml
+#RUN sed -i -e             's/port="8090"/port="8090"                                    \
+#                                         secure="${CATALINA_CONNECTOR_SECURE}"          \
+#                                         scheme="${CATALINA_CONNECTOR_SCHEME}"          \
+#                                         proxyName="${CATALINA_CONNECTOR_PROXYNAME}"    \
+#                                         proxyPort="${CATALINA_CONNECTOR_PROXYPORT}"/'  \
+#                           ${CONFLUENCE_INSTALL}/conf/server.xml
 
 
 USER root:root
