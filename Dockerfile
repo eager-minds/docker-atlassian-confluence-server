@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM frolvlad/alpine-oraclejdk8:cleaned
 MAINTAINER Javier de Diego Navarro - Eager Minds [javier@eager-minds.com]
 
 # Environment vars
@@ -23,8 +23,8 @@ RUN set -x
 
 # Install requeriments
 RUN apk update -qq
+RUN apk add --no-cache    ca-certificates wget curl openssh bash procps openssl perl ttf-dejavu tini xmlstarlet
 RUN update-ca-certificates
-RUN apk add --no-cache    ca-certificates wget curl openssh bash procps openssl perl ttf-dejavu tini libc6-compat xmlstarlet
 
 # Confluence set up
 RUN rm -rf                /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
